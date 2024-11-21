@@ -1,0 +1,63 @@
+---
+title: "CBA Final Project"
+author: "Liv & Madi"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+# load data
+property <- read.csv(here::here("data", "property spreadsheet.csv")) %>% 
+  janitor::clean_names() %>% 
+  drop_na(market_value_2015)
+```
+
+```{r}
+# set factors
+property$parcel_number <- as.factor(property$parcel_number)
+property$use_description <- as.factor(property$use_description)
+property$pool_spa <- as.factor(property$pool_spa)
+property$in_floodplain <- as.factor(property$in_floodplain)
+
+# convert year_built to years_old
+property <- property %>% 
+  mutate(years_old = 2024 - year_built)
+```
+
+```{r}
+# visualize data
+hist(property$area_square_feet)
+```
+
+```{r}
+# look at means
+property %>% 
+  group_by(in_floodplain) %>% 
+  summarize(mean_2024 = mean(market_value_2024),
+            mean_2015 = mean(market_value_2015))
+```
+
+
+
+```{r}
+# run linear regression
+reg <- lm(market_value_2024 ~ use_description + acreage + area_square_feet + years_old + number_bedrooms + number_bathrooms + number_fireplaces + garage + pool_spa + in_floodplain,
+          data = property)
+summary(reg)
+```
+
+
+```{r}
+# run linear regression
+reg <- lm(market_value_2015 ~ use_description + acreage + area_square_feet + years_old + number_bedrooms + number_bathrooms + number_fireplaces + garage + pool_spa + in_floodplain,
+          data = property)
+summary(reg)
+```
+
+
+
+
