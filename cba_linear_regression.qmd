@@ -30,7 +30,7 @@ property <- property %>%
 
 ```{r}
 # visualize data
-hist(property$area_square_feet)
+hist(property$distance_to_wetland)
 ```
 
 ```{r}
@@ -38,14 +38,21 @@ hist(property$area_square_feet)
 property %>% 
   group_by(in_floodplain) %>% 
   summarize(mean_2024 = mean(market_value_2024),
-            mean_2015 = mean(market_value_2015))
+            mean_2015 = mean(market_value_2015),
+            mean_assessed = mean(net_assessed_value),
+            mean_dist = mean(distance_to_wetland))
+
+# Was it in the floodplain before the open space restoration? 
+# 0 = yes, 1 = no
+# hypothesis: house values in the floodplain would be lower pre-restoration and about similar post-restoration
+# result: houses that were in the floodplain were more expensive in 2015 and in 2024 (but is this difference significant?)
 ```
 
 
 
 ```{r}
 # run linear regression
-reg <- lm(market_value_2024 ~ use_description + acreage + area_square_feet + years_old + number_bedrooms + number_bathrooms + number_fireplaces + garage + pool_spa + in_floodplain,
+reg <- lm(market_value_2024 ~ acreage + area_square_feet + years_old + number_bedrooms + number_bathrooms + number_fireplaces + garage + pool_spa + distance_to_wetland + in_floodplain,
           data = property)
 summary(reg)
 ```
@@ -53,11 +60,16 @@ summary(reg)
 
 ```{r}
 # run linear regression
-reg <- lm(market_value_2015 ~ use_description + acreage + area_square_feet + years_old + number_bedrooms + number_bathrooms + number_fireplaces + garage + pool_spa + in_floodplain,
+reg <- lm(market_value_2015 ~ acreage + area_square_feet + years_old + number_bedrooms + number_bathrooms + number_fireplaces + garage + pool_spa + distance_to_wetland + in_floodplain,
           data = property)
 summary(reg)
 ```
 
 
-
+```{r}
+# run linear regression
+reg <- lm(net_assessed_value ~ acreage + area_square_feet + years_old + number_bedrooms + number_bathrooms + number_fireplaces + garage + pool_spa + distance_to_wetland + in_floodplain,
+          data = property)
+summary(reg)
+```
 
