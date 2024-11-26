@@ -28,9 +28,22 @@ property <- property %>%
   mutate(years_old = 2024 - year_built)
 ```
 
+
 ```{r}
 # visualize data
 hist(property$distance_to_wetland)
+
+hist(property$market_value_2024)
+
+#take the log of the market value to make it more normal
+hist(log(property$market_value_2024))
+
+hist(property$market_value_2015)
+
+#log of 2015 market value
+hist(log(property$market_value_2015))
+
+hist(property$net_assessed_value)
 ```
 
 ```{r}
@@ -48,28 +61,56 @@ property %>%
 # result: houses that were in the floodplain were more expensive in 2015 and in 2024 (but is this difference significant?)
 ```
 
+```{r}
+# run linear regression
+reg1 <- lm(market_value_2024 ~ acreage + area_square_feet + years_old + number_bedrooms + number_bathrooms + number_fireplaces + garage + pool_spa + distance_to_wetland + in_floodplain,
+          data = property)
+summary(reg1)
 
+
+#histogram of residuals
+plot(reg1)
+hist(reg1$residuals)
+```
 
 ```{r}
 # run linear regression
-reg <- lm(market_value_2024 ~ acreage + area_square_feet + years_old + number_bedrooms + number_bathrooms + number_fireplaces + garage + pool_spa + distance_to_wetland + in_floodplain,
+reg2 <- lm(market_value_2015 ~ acreage + area_square_feet + years_old + number_bedrooms + number_bathrooms + number_fireplaces + garage + pool_spa + distance_to_wetland + in_floodplain,
           data = property)
-summary(reg)
+summary(reg2)
+
+#histogram of residuals
+plot(reg2)
+hist(reg2$residuals)
+```
+
+```{r}
+# run linear regression
+reg3 <- lm(net_assessed_value ~ acreage + area_square_feet + years_old + number_bedrooms + number_bathrooms + number_fireplaces + garage + pool_spa + distance_to_wetland + in_floodplain,
+          data = property)
+summary(reg3)
+
+#histogram of residuals
+plot(reg3)
+hist(reg3$residuals)
 ```
 
 
 ```{r}
-# run linear regression
-reg <- lm(market_value_2015 ~ acreage + area_square_feet + years_old + number_bedrooms + number_bathrooms + number_fireplaces + garage + pool_spa + distance_to_wetland + in_floodplain,
-          data = property)
-summary(reg)
-```
+# plot the mean and stardard deviation of market value for 2015 and 2024 both in and out of the floodplain on the same plot
+property %>% 
+  group_by(in_floodplain) %>% 
+  summarize(mean_2024 = mean(market_value_2024),
+            sd_2024 = sd(market_value_2024),
+            mean_2015 = mean(market_value_2015),
+            sd_2015 = sd(market_value_2015)) %>% 
+  ggplot(aes(x = in_floodplain, y = mean_2015, fill = in_floodplain)) +
+  geom_bar(stat = "identity") +
+  geom_errorbar(aes(ymin = mean_2015 - sd_2015, ymax = mean_2015 + sd_2015), width = 0.2) +
+  labs(title = "Mean Market Value 2024",
+       x = "In Floodplain",
+       y = "Mean Market Value") +
+  theme_minimal()
 
-
-```{r}
-# run linear regression
-reg <- lm(net_assessed_value ~ acreage + area_square_feet + years_old + number_bedrooms + number_bathrooms + number_fireplaces + garage + pool_spa + distance_to_wetland + in_floodplain,
-          data = property)
-summary(reg)
 ```
 
