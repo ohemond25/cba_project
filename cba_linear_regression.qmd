@@ -64,6 +64,22 @@ property %>%
 ```
 
 ```{r}
+#summary statistics of dataset
+property %>% 
+  select(net_assessed_value, market_value_2024, market_value_2015, acreage, area_square_feet, years_old, number_bedrooms, number_bathrooms, number_fireplaces, garage, distance_to_wetland) %>% 
+  summary()
+
+#make a table of the variable, mean, min, and max for each variable
+table <- property %>% 
+  select(net_assessed_value, market_value_2024, market_value_2015, acreage, area_square_feet, years_old, number_bedrooms, number_bathrooms, number_fireplaces, garage, distance_to_wetland) %>% 
+  map_df(~list(mean = mean(.x, na.rm = TRUE), min = min(.x, na.rm = TRUE), max = max(.x, na.rm = TRUE))) %>% 
+  kable() %>% 
+  kable_styling()
+
+```
+
+
+```{r}
 # run linear regression
 reg1 <- lm(market_value_2024 ~ acreage + area_square_feet + years_old + number_bedrooms + number_bathrooms + number_fireplaces + garage + pool_spa + distance_to_wetland + in_floodplain,
           data = property)
