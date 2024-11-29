@@ -7,6 +7,8 @@ editor: visual
 
 ```{r}
 library(tidyverse)
+library(kableExtra)
+library(scales)
 ```
 
 ```{r}
@@ -97,20 +99,88 @@ hist(reg3$residuals)
 
 
 ```{r}
-# plot the mean and stardard deviation of market value for 2015 and 2024 both in and out of the floodplain on the same plot
-property %>% 
-  group_by(in_floodplain) %>% 
-  summarize(mean_2024 = mean(market_value_2024),
-            sd_2024 = sd(market_value_2024),
-            mean_2015 = mean(market_value_2015),
-            sd_2015 = sd(market_value_2015)) %>% 
-  ggplot(aes(x = in_floodplain, y = mean_2015, fill = in_floodplain)) +
-  geom_bar(stat = "identity") +
-  geom_errorbar(aes(ymin = mean_2015 - sd_2015, ymax = mean_2015 + sd_2015), width = 0.2) +
-  labs(title = "Mean Market Value 2024",
-       x = "In Floodplain",
-       y = "Mean Market Value") +
+# Extract summary stats for reg1
+reg1_summary <- broom::tidy(reg1) %>%
+  # Round the values for better presentation
+  mutate(
+    estimate = round(estimate, 2),
+    std.error = round(std.error, 2),
+    statistic = round(statistic, 2),
+    p.value = round(p.value, 3)
+  )
+
+# Export as csv
+write_csv(reg1_summary, here::here("reg1_summary.csv"))
+
+# Extract summary stats for reg2
+reg2_summary <- broom::tidy(reg2) %>%
+  # Round the values for better presentation
+  mutate(
+    estimate = round(estimate, 2),
+    std.error = round(std.error, 2),
+    statistic = round(statistic, 2),
+    p.value = round(p.value, 3)
+  )
+
+# Export as csv
+write_csv(reg2_summary, here::here("reg2_summary.csv"))
+
+# Extract summary stats for reg3
+reg3_summary <- broom::tidy(reg3) %>%
+  # Round the values for better presentation
+  mutate(
+    estimate = round(estimate, 2),
+    std.error = round(std.error, 2),
+    statistic = round(statistic, 2),
+    p.value = round(p.value, 3)
+  )
+
+# Export as csv
+write_csv(reg3_summary, here::here("reg3_summary.csv"))
+
+```
+
+# Bar Graph
+
+```{r}
+property_long <- property %>%
+  pivot_longer(
+    cols = starts_with("market_value"),
+    names_to = "year",
+    names_prefix = "market_value_",
+    values_to = "market_value"
+  )
+```
+
+```{r}
+property_long %>%
+  group_by(in_floodplain, year) %>%
+  summarize(
+    mean_value = mean(market_value, na.rm = TRUE),
+    sd_value = sd(market_value, na.rm = TRUE)
+  ) %>%
+  ggplot(aes(x = year, y = mean_value, fill = in_floodplain)) +
+  geom_bar(stat = "identity", position = "dodge", color = "black") +
+  geom_errorbar(
+    aes(ymin = mean_value - sd_value, ymax = mean_value + sd_value),
+    position = position_dodge(0.9),
+    width = 0.2
+  ) +
+  labs(
+    x = "Year",
+    y = "Mean Market Value (dollars)",
+    fill = "Previously in Floodplain"
+  ) +
+  scale_fill_manual(
+    values = c("0" = "#00BFFF", "1" = "#FFA500"),
+    labels = c("0" = "Yes (n = 24)", "1" = "No (n = 20)")
+  ) +
+  scale_y_continuous(labels = label_comma()) + 
   theme_minimal()
+
+#save it 6x5
+ggsave(here::here("mean_market_value_by_year_and_floodplain.png"))
+
 
 ```
 

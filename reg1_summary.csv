@@ -1,0 +1,14 @@
+term,estimate,std.error,statistic,p.value
+(Intercept),1712363.58,792644.15,2.16,0.039
+acreage,2587909.22,288057.09,8.98,0
+area_square_feet,219.34,112.11,1.96,0.059
+years_old,-32529.25,17717.53,-1.84,0.076
+number_bedrooms,54010.04,37050.04,1.46,0.155
+number_bathrooms,138938.43,41553.09,3.34,0.002
+number_fireplaces,-12619.27,48813.21,-0.26,0.798
+garage,772.58,381.08,2.03,0.051
+pool_spaNone,5655.1,39731.71,0.14,0.888
+pool_spaPool,45244.51,46361.39,0.98,0.337
+pool_spaSpa,143522.58,67275.78,2.13,0.041
+distance_to_wetland,179.45,176.12,1.02,0.316
+in_floodplain1,-10726.16,27483.84,-0.39,0.699
